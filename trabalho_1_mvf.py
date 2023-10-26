@@ -44,14 +44,18 @@ class MVF:
         concentracaoInicialUsada = self.Ca
 
        
-        Qn = [self.Ca] * int(self.numVolumes)
+        Qn = [0.0] * int(self.numVolumes)
+        QnMaisUm = [0.0] * int(self.numVolumes)
+
         for i in range(0, int(numVolumes)):
             if(i < numVolumes/2):
                 Qn[i] = Ca
+                QnMaisUm[i] = Ca
             else:
                 Qn[i] = Cb
+                QnMaisUm[i] = Cb
 
-        QnMaisUm = [0.0] * int(self.numVolumes)
+
         tempoAux = 0.0
 
         self.deltaTMax = 0.8 * (1 / ((self.uBarra / self.deltaX) + (2 * self.alfa / (self.deltaX * self.deltaX))))
@@ -86,29 +90,51 @@ class MVF:
 
         print('QnMaisUm:', QnMaisUm)
         return QnMaisUm
+    
+
+    def plotInitialValues(self):
+        Qini = [self.Ca] * int(self.numVolumes)
+        x = [i * self.deltaX / 2 for i in range(int(self.numVolumes))]
+        
+        for i in range(0, int(numVolumes)):
+            if(i <= numVolumes/2):
+                Qini[i] = Ca
+            else:
+                Qini[i] = Cb
+
+        plt.plot(x, Qini)
+        plt.xlabel('Posição')
+        plt.ylabel('Concentração')
+        plt.title('Difusão e Advecção - Valores Iniciais')
+        plt.grid(True)
+        plt.scatter(x, Qini)
+        plt.show()
+        
 
     def plot(self):
         Qn = self.generate()
-        x = [i * self.deltaX for i in range(int(self.numVolumes))]
+        x = [i * self.deltaX / 2 for i in range(int(self.numVolumes))]
         plt.plot(x, Qn)
         plt.xlabel('Posição')
         plt.ylabel('Concentração')
         plt.title('Difusão e Advecção')
         plt.grid(True)
+        plt.scatter(x, Qn)
         plt.show()
 
 if __name__ == "__main__":
-    alfa = 0.2
-    uBarra = 0.2
-    comprimento = 25
+    alfa = 0.01
+    uBarra = 0.0001
+    comprimento = 18
     comprimeiroIntermediario = 6
-    Ca = 2.0
-    Cb = 1.3
+    Ca = 0.9
+    Cb = 0.2
     numVolumes = 64
-    tempo = 600
-    deltaT = 0.01
-    tempoIntermed = 200
+    tempo = 300
+    deltaT = 0.1
+    tempoIntermed = 150
 
 
     mvf = MVF(alfa, uBarra, comprimento, comprimeiroIntermediario, Ca, Cb, numVolumes, tempo, deltaT, tempoIntermed)
+    #mvf.plotInitialValues()
     mvf.plot()
