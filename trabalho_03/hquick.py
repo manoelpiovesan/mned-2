@@ -8,11 +8,13 @@
 ### Lembre-se de instalar o matplotlib (pip install matplotlib ou pip3 install matplotlib)
 ###
 
-
+from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 
 def hquick(comprimento, numeroVolumes, tInicial, tFinal, velocidade, ca, cb, cc):
+
+    tempoDeInicio = datetime.now()
     DeltaX = comprimento / numeroVolumes
     DeltaT = 0.95* DeltaX/ (velocidade)
     tempo = np.arange(tInicial, tFinal, DeltaT)
@@ -62,15 +64,20 @@ def hquick(comprimento, numeroVolumes, tInicial, tFinal, velocidade, ca, cb, cc)
         Q = np.copy(QnMaisUm) 
         Q_final = np.copy(QnMaisUm)
 
-    return espaco, Q_final
+        tempoDeFim = datetime.now()
+
+        tempoDeExecucao = (tempoDeFim - tempoDeInicio).total_seconds() 
+
+    return espaco, Q_final, tempoDeExecucao
 
 def plotaGrafico(comprimento,  numeroVolumes, tInicial, tFinal, velocidade,ca, cb, cc):
-    volume, Solucao = hquick(comprimento,  numeroVolumes, tInicial, tFinal, velocidade,ca, cb, cc)
+    volume, dados, tempoDeExecucao = hquick(comprimento,  numeroVolumes, tInicial, tFinal, velocidade,ca, cb, cc)
     plt.title('Concentração x Comprimento')
-    plt.plot(volume,Solucao, label='$T_{total}$')
+    plt.plot(volume,dados, label='$T_{total}$')
     plt.xlabel('Comprimento')
     plt.ylabel('Concentração')
     plt.legend(title = r'$t$', loc=0)
+    plt.legend(title = r'$Tempo_{execução}$ = '+str(tempoDeExecucao)+" s", loc=0)
 
     plt.show()
 
@@ -78,9 +85,10 @@ def plotaGrafico(comprimento,  numeroVolumes, tInicial, tFinal, velocidade,ca, c
 def refinamentoDeMalha(comprimento, tInicial, tFinal, velocidade,ca, cb, cc):
     volumes = [12,24,48,96,192]
     for i in range(len(volumes)):
-        volume, Solucao = hquick(comprimento,  volumes[i], tInicial, tFinal, velocidade,ca, cb, cc)
-        plt.plot(volume,Solucao, label=str(volumes[i]))
+        volume, dados, tempoDeExecucao = hquick(comprimento,  volumes[i], tInicial, tFinal, velocidade,ca, cb, cc)
+        plt.plot(volume,dados, label=str(volumes[i]))
         plt.legend(title = r'$Numero$ $de$ $Volumes$', loc=0)
+        plt.legend(title = r'$Tempo_{execução}$ = '+str(tempoDeExecucao)+" s", loc=0)
         
     plt.title('Refinamento de malha')
     plt.xlabel('Comprimento')
@@ -90,9 +98,10 @@ def refinamentoDeMalha(comprimento, tInicial, tFinal, velocidade,ca, cb, cc):
 def variacaoComprimento(numeroVolumes, tInicial, tFinal, velocidade,ca, cb, cc):
     comprimentos = [200,250,300,350,400]
     for i in range(len(comprimentos)):
-        volume, Solucao = hquick(comprimentos[i],  numeroVolumes, tInicial, tFinal, velocidade, ca, cb, cc)
-        plt.plot(volume,Solucao, label=str("%.2f" %comprimentos[i]))
+        volume, dados, tempoDeExecucao = hquick(comprimentos[i],  numeroVolumes, tInicial, tFinal, velocidade, ca, cb, cc)
+        plt.plot(volume,dados, label=str("%.2f" %comprimentos[i]))
         plt.legend(title = r'$L_x$', loc=0)
+        plt.legend(title = r'$Tempo_{execução}$ = '+str(tempoDeExecucao)+" s", loc=0)
         
     plt.title('Variação de Comprimento')
     plt.xlabel('Comprimento')
@@ -103,9 +112,10 @@ def variacaoComprimento(numeroVolumes, tInicial, tFinal, velocidade,ca, cb, cc):
 def variacaoVelocidade(comprimento,  numeroVolumes, tInicial, tFinal, ca, cb, cc,):
     velocidades = [0.25,0.5,1,1.5,1.75]
     for i in range(len(velocidades)):
-        volume, Solucao = hquick(comprimento,  numeroVolumes, tInicial, tFinal, velocidades[i], ca, cb, cc)
-        plt.plot(volume,Solucao, label=str("%.2f" %velocidades[i]))
+        volume, dados, tempoDeExecucao = hquick(comprimento,  numeroVolumes, tInicial, tFinal, velocidades[i], ca, cb, cc)
+        plt.plot(volume,dados, label=str("%.2f" %velocidades[i]))
         plt.legend(title = r'$ \overline{u}$', loc=0)
+        plt.legend(title = r'$Tempo_{execução}$ = '+str(tempoDeExecucao)+" s", loc=0)
         
     plt.title('Variação de Velocidade')
     plt.xlabel('Comprimento')
@@ -116,15 +126,15 @@ def variacaoTempo(comprimento,  numeroVolumes, tInicial, tFinal, velocidade,ca, 
     passoTempo=float((tFinal-tInicial)/qtdComparacoes)
     tempos = np.arange(tInicial+passoTempo, tFinal+passoTempo, passoTempo)
     for i in range(len(tempos)):
-        volume, Solucao = hquick(comprimento,  numeroVolumes, tInicial, tempos[i], velocidade, ca, cb, cc)
-        plt.plot(volume,Solucao, label=str(tempos[i]))
+        volume, dados, tempoDeExecucao = hquick(comprimento,  numeroVolumes, tInicial, tempos[i], velocidade, ca, cb, cc)
+        plt.plot(volume,dados, label=str(tempos[i]))
         plt.legend(title = r'$T_f$', loc=0)
+        plt.legend(title = r'$Tempo_{execução}$ = '+str(tempoDeExecucao)+" s", loc=0)
         
     plt.title('Variação de Tempo')
     plt.xlabel('Comprimento')
     plt.ylabel('Concentração')
-    plt.show()    
-
+    plt.show()
 
 plotaGrafico(comprimento=300, numeroVolumes=128,tInicial= 0,tFinal=20,velocidade=1,ca=0.9,cb= 0.2,cc= 1.1)
 refinamentoDeMalha(comprimento=300, tInicial=0,tFinal= 5,velocidade=1,ca=0.9, cb=0.2, cc=1.1)
